@@ -33,13 +33,13 @@ export function CollectionView({
 
         <button
           onClick={addCard}
-          className="bg-yellow-400 text-slate-950 font-bold px-5 py-3 rounded-xl hover:bg-yellow-300 transition flex items-center gap-2"
+          className="fixed bottom-6 right-6 lg:static z-40 bg-emerald-400 text-slate-950 font-bold px-5 py-4 lg:py-3 rounded-full lg:rounded-xl shadow-lg shadow-emerald-500/30 hover:bg-emerald-300 transition flex items-center gap-2"
         >
           <Plus size={20} /> Add Card
         </button>
       </div>
 
-      <div className="grid grid-cols-[360px_1fr] gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6 lg:gap-8">
         <section className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
           <h3 className="text-xl font-bold mb-4">Cards</h3>
 

@@ -132,10 +132,10 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-950 text-white flex">
+    <main className="min-h-screen bg-slate-950 text-white flex pb-24 lg:pb-0">
       <Sidebar view={view} setView={setView} />
 
-      <section className="flex-1 p-10">
+      <section className="flex-1 p-4 sm:p-6 lg:p-10">
         {view === "dashboard" && (
           <Dashboard cardCount={cards.length} onAddCard={addCard} />
         )}
