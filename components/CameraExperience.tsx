@@ -154,14 +154,30 @@ export function CameraExperience({
             <Camera size={30} />
           </div>
 
-          <h1 className="text-4xl font-black">The Vault</h1>
-          <p className="mt-2 text-slate-300">
-            Align your card inside the frame.
-          </p>
+          <h1 className="text-4xl font-black">The Vault Camera</h1>
+            <p className="mt-2 text-slate-300">
+              Center the card. Archive the story.
+            </p>
         </div>
 
         <div className="mx-auto w-full max-w-xs">
-          <div className="aspect-[2.5/3.5] rounded-[2rem] border-4 border-emerald-400/80 shadow-2xl shadow-emerald-500/30 bg-emerald-400/5 backdrop-blur-[1px]" />
+          <div className="relative aspect-[2.5/3.5] rounded-[2rem] bg-emerald-400/5 backdrop-blur-[1px] shadow-2xl shadow-emerald-500/30">
+            {/* Vault frame corners */}
+            <div className="absolute -top-1 -left-1 h-12 w-12 border-t-4 border-l-4 border-yellow-300 rounded-tl-3xl" />
+            <div className="absolute -top-1 -right-1 h-12 w-12 border-t-4 border-r-4 border-yellow-300 rounded-tr-3xl" />
+            <div className="absolute -bottom-1 -left-1 h-12 w-12 border-b-4 border-l-4 border-yellow-300 rounded-bl-3xl" />
+            <div className="absolute -bottom-1 -right-1 h-12 w-12 border-b-4 border-r-4 border-yellow-300 rounded-br-3xl" />
+
+            {/* soft inner guide */}
+            <div className="absolute inset-4 rounded-[1.5rem] border border-emerald-300/40" />
+
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="rounded-full bg-slate-950/70 border border-emerald-400/40 px-4 py-2 text-sm text-emerald-300">
+                Align Card
+              </div>
+            </div>
+          </div>
+
           <p className="mt-4 text-sm text-emerald-300">
             Every card has a story. Every story deserves a home.
           </p>
@@ -176,7 +192,7 @@ export function CameraExperience({
             className="mx-auto w-full max-w-sm rounded-2xl bg-emerald-400 px-6 py-4 text-slate-950 font-black text-lg shadow-lg shadow-emerald-500/30 disabled:opacity-50 flex items-center justify-center gap-2"
           >
             <Archive size={22} />
-            {archiving ? "Archiving..." : "Archive Card"}
+            {archiving ? "Creating Passport..." : "Archive Card"}
           </button>
         </div>
       </div>
