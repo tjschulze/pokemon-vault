@@ -7,6 +7,7 @@ import { Sidebar } from "@/components/Sidebar";
 import { Dashboard } from "@/components/Dashboard";
 import { CollectionView } from "@/components/CollectionView";
 import { CardPassport } from "@/components/CardPassport";
+import { CameraExperience } from "@/components/CameraExperience";
 
 function nextId(cards: CardCopy[]) {
   const max = cards
@@ -25,6 +26,7 @@ export default function Home() {
 
   const selectedCard = cards.find((card) => card.id === selectedId);
   const passportCard = cards.find((card) => card.id === passportCardId);
+  const [cameraOpen, setCameraOpen] = useState(false);
 
   useEffect(() => {
     loadCards();
@@ -133,9 +135,22 @@ export default function Home() {
     setCards(remaining);
     setSelectedId(remaining[0]?.id ?? "");
   }
+  function handleCameraCardCreated(card: CardCopy) {
+      setCards([card, ...cards]);
+      setSelectedId(card.id);
+      setPassportCardId(card.id);
+      setCameraOpen(false);
+  }
 
   return (
     <main className="min-h-screen bg-slate-950 text-white flex pb-24 lg:pb-0">
+      {cameraOpen && (
+          <CameraExperience
+          onClose={() => setCameraOpen(false)}
+          onCardCreated={handleCameraCardCreated}
+          nextId={nextId(cards)}
+        />
+      )}
       <Sidebar view={view} setView={setView} />
 
       <section className="flex-1 p-4 sm:p-6 lg:p-10">
@@ -147,7 +162,7 @@ export default function Home() {
           ) : (
           <>
             {view === "dashboard" && (
-              <Dashboard cardCount={cards.length} onAddCard={addCard} />
+              <Dashboard cardCount={cards.length} onAddCard={() => setCameraOpen(true)} />
             )}
 
             {view === "collection" && (
@@ -156,7 +171,7 @@ export default function Home() {
                 selectedCard={selectedCard}
                 selectedId={selectedId}
                 setSelectedId={setSelectedId}
-                addCard={addCard}
+                addCard={() => setCameraOpen(true)}
                 updateCard={updateCard}
                 deleteCard={deleteCard}
                 openPassport={setPassportCardId}
