@@ -34,7 +34,7 @@ export function CollectionView({
         </div>
 
         <button
-          onClick={() => openPassport(card.id)}
+          onClick={addCard}
           className="fixed bottom-6 right-6 lg:static z-40 bg-emerald-400 text-slate-950 font-bold px-5 py-4 lg:py-3 rounded-full lg:rounded-xl shadow-lg shadow-emerald-500/30 hover:bg-emerald-300 transition flex items-center gap-2"
         >
           <Plus size={20} /> Add Card
