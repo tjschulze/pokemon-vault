@@ -130,14 +130,14 @@ export function CardEditor({
           </button>
         </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+        <div className="flex flex-col gap-4">
           <Field label="Card Name" value={card.name} onChange={(v) => updateCard(card.id, { name: v })} />
           <Field label="Set / Expansion" value={card.setName} onChange={(v) => updateCard(card.id, { setName: v })} />
           <Field label="Card Number" value={card.number} onChange={(v) => updateCard(card.id, { number: v })} />
           <Field label="Rarity" value={card.rarity} onChange={(v) => updateCard(card.id, { rarity: v })} />
           <Field label="Condition" value={card.condition} onChange={(v) => updateCard(card.id, { condition: v })} />
 
-          <label className="col-span-2">
+          <label>
             <span className="text-sm text-slate-400">Notes</span>
             <textarea
               value={card.notes}
