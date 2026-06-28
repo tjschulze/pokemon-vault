@@ -148,7 +148,7 @@ export function CameraExperience({
         <X />
       </button>
 
-      <div className="relative z-10 min-h-screen flex flex-col justify-between p-5 pt-12 pb-32 text-center">
+      <div className="relative z-10 min-h-screen flex flex-col justify-between p-5 pt-12 pb-56 text-center">
         <div>
           <div className="mx-auto mb-3 h-14 w-14 rounded-full bg-emerald-400 text-slate-950 flex items-center justify-center shadow-lg shadow-emerald-500/40">
             <Camera size={30} />
@@ -167,7 +167,7 @@ export function CameraExperience({
           </p>
         </div>
 
-        <div>
+        <div className="fixed left-0 right-0 bottom-0 z-30 px-5 pb-[calc(env(safe-area-inset-bottom)+6rem)]">
           {error && <p className="mb-4 text-red-300">{error}</p>}
 
           <button
