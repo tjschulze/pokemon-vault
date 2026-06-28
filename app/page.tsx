@@ -1,65 +1,172 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
+import type { CardCopy, View } from "@/types/card";
+import { Sidebar } from "@/components/Sidebar";
+import { Dashboard } from "@/components/Dashboard";
+import { CollectionView } from "@/components/CollectionView";
+
+function nextId(cards: CardCopy[]) {
+  const max = cards
+    .map((card) => Number(card.id.replace(/\D/g, "")))
+    .filter(Boolean)
+    .reduce((a, b) => Math.max(a, b), 0);
+
+  return `PKV-${String(max + 1).padStart(6, "0")}`;
+}
 
 export default function Home() {
+  const [view, setView] = useState<View>("dashboard");
+  const [cards, setCards] = useState<CardCopy[]>([]);
+  const [selectedId, setSelectedId] = useState("");
+
+  const selectedCard = cards.find((card) => card.id === selectedId);
+
+  useEffect(() => {
+    loadCards();
+  }, []);
+
+  async function loadCards() {
+    const { data, error } = await supabase
+      .from("cards")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error(error);
+      alert(error.message);
+      return;
+    }
+
+    const loadedCards: CardCopy[] = (data ?? []).map((row) => ({
+      id: row.id,
+      name: row.name ?? "",
+      setName: row.set_name ?? "",
+      number: row.number ?? "",
+      rarity: row.rarity ?? "",
+      condition: row.condition ?? "",
+      imageUrl: row.image_url ?? "",
+      notes: row.notes ?? "",
+    }));
+
+    setCards(loadedCards);
+    setSelectedId(loadedCards[0]?.id ?? "");
+  }
+
+  async function addCard() {
+    const newCard: CardCopy = {
+      id: nextId(cards),
+      name: "",
+      setName: "",
+      number: "",
+      rarity: "",
+      condition: "",
+      imageUrl: "",
+      notes: "",
+    };
+
+    const { error } = await supabase.from("cards").insert({
+      id: newCard.id,
+      name: newCard.name,
+      set_name: newCard.setName,
+      number: newCard.number,
+      rarity: newCard.rarity,
+      condition: newCard.condition,
+      image_url: newCard.imageUrl,
+      notes: newCard.notes,
+    });
+
+    if (error) {
+      console.error(error);
+      alert(error.message);
+      return;
+    }
+
+    setCards([newCard, ...cards]);
+    setSelectedId(newCard.id);
+    setView("collection");
+  }
+
+  async function updateCard(id: string, patch: Partial<CardCopy>) {
+    const currentCard = cards.find((card) => card.id === id);
+    if (!currentCard) return;
+
+    const updatedCard = { ...currentCard, ...patch };
+
+    setCards(cards.map((card) => (card.id === id ? updatedCard : card)));
+
+    const { error } = await supabase
+      .from("cards")
+      .update({
+        name: updatedCard.name,
+        set_name: updatedCard.setName,
+        number: updatedCard.number,
+        rarity: updatedCard.rarity,
+        condition: updatedCard.condition,
+        image_url: updatedCard.imageUrl,
+        notes: updatedCard.notes,
+      })
+      .eq("id", id);
+
+    if (error) {
+      console.error(error);
+      alert(error.message);
+    }
+  }
+
+  async function deleteCard(id: string) {
+    if (!confirm("Delete this card?")) return;
+
+    const { error } = await supabase.from("cards").delete().eq("id", id);
+
+    if (error) {
+      console.error(error);
+      alert(error.message);
+      return;
+    }
+
+    const remaining = cards.filter((card) => card.id !== id);
+    setCards(remaining);
+    setSelectedId(remaining[0]?.id ?? "");
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+    <main className="min-h-screen bg-slate-950 text-white flex">
+      <Sidebar view={view} setView={setView} />
+
+      <section className="flex-1 p-10">
+        {view === "dashboard" && (
+          <Dashboard cardCount={cards.length} onAddCard={addCard} />
+        )}
+
+        {view === "collection" && (
+          <CollectionView
+            cards={cards}
+            selectedCard={selectedCard}
+            selectedId={selectedId}
+            setSelectedId={setSelectedId}
+            addCard={addCard}
+            updateCard={updateCard}
+            deleteCard={deleteCard}
+          />
+        )}
+
+        {view !== "dashboard" && view !== "collection" && (
+          <Placeholder title={view} />
+        )}
+      </section>
+    </main>
+  );
+}
+
+function Placeholder({ title }: { title: string }) {
+  return (
+    <div>
+      <h2 className="text-5xl font-bold capitalize">{title}</h2>
+      <p className="text-slate-400 mt-3 text-lg">
+        This section is ready to build next.
+      </p>
     </div>
   );
 }
