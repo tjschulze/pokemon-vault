@@ -6,6 +6,7 @@ import type { CardCopy, View } from "@/types/card";
 import { Sidebar } from "@/components/Sidebar";
 import { Dashboard } from "@/components/Dashboard";
 import { CollectionView } from "@/components/CollectionView";
+import { CardPassport } from "@/components/CardPassport";
 
 function nextId(cards: CardCopy[]) {
   const max = cards
@@ -20,8 +21,10 @@ export default function Home() {
   const [view, setView] = useState<View>("dashboard");
   const [cards, setCards] = useState<CardCopy[]>([]);
   const [selectedId, setSelectedId] = useState("");
+  const [passportCardId, setPassportCardId] = useState("");
 
   const selectedCard = cards.find((card) => card.id === selectedId);
+  const passportCard = cards.find((card) => card.id === passportCardId);
 
   useEffect(() => {
     loadCards();
@@ -136,24 +139,34 @@ export default function Home() {
       <Sidebar view={view} setView={setView} />
 
       <section className="flex-1 p-4 sm:p-6 lg:p-10">
-        {view === "dashboard" && (
-          <Dashboard cardCount={cards.length} onAddCard={addCard} />
-        )}
-
-        {view === "collection" && (
-          <CollectionView
-            cards={cards}
-            selectedCard={selectedCard}
-            selectedId={selectedId}
-            setSelectedId={setSelectedId}
-            addCard={addCard}
-            updateCard={updateCard}
-            deleteCard={deleteCard}
+         {passportCard ? (
+          <CardPassport
+            card={passportCard}
+            onBack={() => setPassportCardId("")}
           />
-        )}
+          ) : (
+          <>
+            {view === "dashboard" && (
+              <Dashboard cardCount={cards.length} onAddCard={addCard} />
+            )}
 
-        {view !== "dashboard" && view !== "collection" && (
-          <Placeholder title={view} />
+            {view === "collection" && (
+              <CollectionView
+                cards={cards}
+                selectedCard={selectedCard}
+                selectedId={selectedId}
+                setSelectedId={setSelectedId}
+                addCard={addCard}
+                updateCard={updateCard}
+                deleteCard={deleteCard}
+                openPassport={setPassportCardId}
+              />
+            )}
+
+            {view !== "dashboard" && view !== "collection" && (
+              <Placeholder title={view} />
+            )}
+          </>
         )}
       </section>
     </main>

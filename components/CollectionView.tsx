@@ -12,6 +12,7 @@ export function CollectionView({
   addCard,
   updateCard,
   deleteCard,
+  openPassport,
 }: {
   cards: CardCopy[];
   selectedCard?: CardCopy;
@@ -20,6 +21,7 @@ export function CollectionView({
   addCard: () => void;
   updateCard: (id: string, patch: Partial<CardCopy>) => void;
   deleteCard: (id: string) => void;
+  openPassport: (id: string) => void;
 }) {
   return (
     <div>
@@ -32,7 +34,7 @@ export function CollectionView({
         </div>
 
         <button
-          onClick={addCard}
+          onClick={() => openPassport(card.id)}
           className="fixed bottom-6 right-6 lg:static z-40 bg-emerald-400 text-slate-950 font-bold px-5 py-4 lg:py-3 rounded-full lg:rounded-xl shadow-lg shadow-emerald-500/30 hover:bg-emerald-300 transition flex items-center gap-2"
         >
           <Plus size={20} /> Add Card
@@ -51,7 +53,7 @@ export function CollectionView({
             {cards.map((card) => (
               <button
                 key={card.id}
-                onClick={() => setSelectedId(card.id)}
+                onClick={() => openPassport(card.id)}
                 className={`w-full text-left p-4 rounded-xl border transition ${
                   selectedId === card.id
                     ? "bg-yellow-400 text-slate-950 border-yellow-300"
