@@ -102,9 +102,9 @@ export function CardEditor({
 
       <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6 lg:gap-8">
         <div>
-          <div className="aspect-[2.5/3.5] bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden flex items-center justify-center">
+          <div className="max-w-[320px] mx-auto lg:mx-0 aspect-[2.5/3.5] bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden flex items-center justify-center">
             {card.imageUrl ? (
-              <img src={card.imageUrl} alt={card.name} className="w-full h-full object-cover" />
+              <img src={card.imageUrl} alt={card.nsame} className="w-full h-full object-cover" />
             ) : (
               <span className="text-slate-500">No image</span>
             )}
@@ -130,7 +130,7 @@ export function CardEditor({
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
           <Field label="Card Name" value={card.name} onChange={(v) => updateCard(card.id, { name: v })} />
           <Field label="Set / Expansion" value={card.setName} onChange={(v) => updateCard(card.id, { setName: v })} />
           <Field label="Card Number" value={card.number} onChange={(v) => updateCard(card.id, { number: v })} />
