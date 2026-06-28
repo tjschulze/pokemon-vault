@@ -251,4 +251,4 @@ function Timeline({ title, text }: { title: string; text: string }) {
       <div className="text-slate-400 text-sm">{text}</div>
     </div>
   );
-}s
+}
