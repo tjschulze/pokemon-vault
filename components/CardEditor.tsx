@@ -104,7 +104,7 @@ export function CardEditor({
         <div>
           <div className="max-w-[320px] mx-auto lg:mx-0 aspect-[2.5/3.5] bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden flex items-center justify-center">
             {card.imageUrl ? (
-              <img src={card.imageUrl} alt={card.nsame} className="w-full h-full object-cover" />
+              <img src={card.imageUrl} alt={card.name} className="w-full h-full object-cover" />
             ) : (
               <span className="text-slate-500">No image</span>
             )}
