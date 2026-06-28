@@ -19,6 +19,8 @@ export function CameraExperience({
   const [archiving, setArchiving] = useState(false);
   const [error, setError] = useState("");
   const [cameraHint, setCameraHint] = useState("Center the card in the frame");
+  const [capturedBlob, setCapturedBlob] = useState<Blob | null>(null);
+  const [capturedPreview, setCapturedPreview] = useState("");
 
   useEffect(() => {
     async function startCamera() {
@@ -82,7 +84,7 @@ export function CameraExperience({
     activeStream?.getTracks().forEach((track) => track.stop());
   }
 
-  async function archiveCard() {
+  async function capturePhoto() {
     if (!videoRef.current) return;
 
     setArchiving(true);
@@ -106,55 +108,83 @@ export function CameraExperience({
         }, "image/jpeg", 0.92);
       });
 
-      const story = "";
-
-      const filePath = `${nextId}/${Date.now()}.jpg`;
-
-      const { error: uploadError } = await supabase.storage
-        .from("card-images")
-        .upload(filePath, blob, {
-          contentType: "image/jpeg",
-          cacheControl: "3600",
-          upsert: true,
-        });
-
-      if (uploadError) throw uploadError;
-
-      const { data } = supabase.storage
-        .from("card-images")
-        .getPublicUrl(filePath);
-
-      const newCard: CardCopy = {
-        id: nextId,
-        name: "",
-        setName: "",
-        number: "",
-        rarity: "",
-        condition: "",
-        imageUrl: data.publicUrl,
-        notes: story,
-      };
-
-      const { error: insertError } = await supabase.from("cards").insert({
-        id: newCard.id,
-        name: newCard.name,
-        set_name: newCard.setName,
-        number: newCard.number,
-        rarity: newCard.rarity,
-        condition: newCard.condition,
-        image_url: newCard.imageUrl,
-        notes: newCard.notes,
-      });
-
-      if (insertError) throw insertError;
-
-      cameraStreamCleanup(stream);
-      onCardCreated(newCard);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Archive failed.";
-      alert(message);
+      const previewUrl = URL.createObjectURL(blob);
+      setCapturedBlob(blob);
+      setCapturedPreview(previewUrl);
       setArchiving(false);
     }
+  }
+  async function archiveCapturedPhoto() {
+      if (!capturedBlob) return;
+
+      setArchiving(true);
+
+      try {
+        const filePath = `${nextId}/${Date.now()}.jpg`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("card-images")
+          .upload(filePath, capturedBlob, {
+            contentType: "image/jpeg",
+            cacheControl: "3600",
+            upsert: true,
+          });
+
+        if (uploadError) throw uploadError;
+
+        const { data } = supabase.storage
+          .from("card-images")
+          .getPublicUrl(filePath);
+
+        const newCard: CardCopy = {
+          id: nextId,
+          name: "",
+          setName: "",
+          number: "",
+          rarity: "",
+          condition: "",
+          imageUrl: data.publicUrl,
+          notes: "",
+        };
+
+        const { error: insertError } = await supabase.from("cards").insert({
+          id: newCard.id,
+          name: newCard.name,
+          set_name: newCard.setName,
+          number: newCard.number,
+          rarity: newCard.rarity,
+          condition: newCard.condition,
+          image_url: newCard.imageUrl,
+          notes: newCard.notes,
+        });
+
+        if (insertError) throw insertError;
+
+        playVaultClick();
+        cameraStreamCleanup(stream);
+        onCardCreated(newCard);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Archive failed.";
+        alert(message);
+        setArchiving(false);
+  }
+}
+  function playVaultClick() {
+      const audioContext = new AudioContext();
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+
+      oscillator.type = "sine";
+      oscillator.frequency.setValueAtTime(180, audioContext.currentTime);
+
+      gain.gain.setValueAtTime(0.08, audioContext.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.08);
+
+      oscillator.connect(gain);
+      gain.connect(audioContext.destination);
+
+      oscillator.start();
+      oscillator.stop(audioContext.currentTime + 0.08);
   }
 
   return (
@@ -216,14 +246,32 @@ export function CameraExperience({
 
         <div className="fixed left-0 right-0 bottom-0 z-30 px-5 pb-[calc(env(safe-area-inset-bottom)+6rem)]">
           {error && <p className="mb-4 text-red-300">{error}</p>}
-
+          {capturedPreview && (
+              <div className="mb-4 mx-auto max-w-xs rounded-2xl border border-emerald-400/40 overflow-hidden bg-slate-950">
+                <img src={capturedPreview} alt="Captured preview" className="w-full" />
+                <button
+                  onClick={() => {
+                    URL.revokeObjectURL(capturedPreview);
+                    setCapturedPreview("");
+                    setCapturedBlob(null);
+                  }}
+                  className="w-full py-3 bg-slate-900 text-slate-300 font-bold"
+                >
+                  Retake
+                </button>
+              </div>
+            )}
           <button
-            onClick={archiveCard}
+            onClick={capturedBlob ? archiveCapturedPhoto : capturePhoto}
             disabled={archiving || !!error}
             className="mx-auto w-full max-w-sm rounded-2xl bg-emerald-400 px-6 py-4 text-slate-950 font-black text-lg shadow-lg shadow-emerald-500/30 disabled:opacity-50 flex items-center justify-center gap-2"
           >
             <Archive size={22} />
-            {archiving ? "Creating Passport..." : "Archive Card"}
+            {archiving
+              ? "Creating Passport..."
+              : capturedBlob
+                ? "Confirm Archive"
+                : "Archive Card"}
           </button>
         </div>
       </div>
