@@ -18,6 +18,7 @@ export function CameraExperience({
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [archiving, setArchiving] = useState(false);
   const [error, setError] = useState("");
+  const [cameraHint, setCameraHint] = useState("Center the card in the frame");
 
   useEffect(() => {
     async function startCamera() {
@@ -57,8 +58,22 @@ export function CameraExperience({
     }
 
     startCamera();
+    const hints = [
+      "Center the card in the frame",
+      "Hold steady",
+      "Avoid glare on the surface",
+      "Fill the brass corners with the card",
+    ];
+
+    let hintIndex = 0;
+
+    const hintTimer = window.setInterval(() => {
+      hintIndex = (hintIndex + 1) % hints.length;
+      setCameraHint(hints[hintIndex]);
+    }, 2500);
 
     return () => {
+      window.clearInterval(hintTimer);
       cameraStreamCleanup(stream);
     };
   }, []);
@@ -190,7 +205,7 @@ export function CameraExperience({
 
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="rounded-full bg-slate-950/70 border border-emerald-400/40 px-4 py-2 text-sm text-emerald-300">
-                Align Card
+                {cameraHint}
               </div>
             </div>
           </div>
