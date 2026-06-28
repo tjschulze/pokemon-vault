@@ -24,12 +24,29 @@ export function CameraExperience({
       try {
         const cameraStream = await navigator.mediaDevices.getUserMedia({
           video: {
-            facingMode: "environment",
+            facingMode: { ideal: "environment" },
+            width: { ideal: 1920 },
+            height: { ideal: 1080 },
+            advanced: [
+              { focusMode: "continuous" } as MediaTrackConstraintSet,
+              { exposureMode: "continuous" } as MediaTrackConstraintSet,
+              { whiteBalanceMode: "continuous" } as MediaTrackConstraintSet,
+            ],
           },
           audio: false,
         });
 
         setStream(cameraStream);
+        const track = cameraStream.getVideoTracks()[0];
+        const capabilities = track.getCapabilities?.();
+
+        console.log("Camera capabilities:", capabilities);
+
+        await track.applyConstraints({
+          advanced: [
+            { focusMode: "continuous" } as MediaTrackConstraintSet,
+          ],
+        });
 
         if (videoRef.current) {
           videoRef.current.srcObject = cameraStream;
