@@ -106,8 +106,7 @@ export function CameraExperience({
         }, "image/jpeg", 0.92);
       });
 
-      const story =
-        prompt("Tell this card's story. You can leave this blank.") ?? "";
+      const story = "";
 
       const filePath = `${nextId}/${Date.now()}.jpg`;
 
