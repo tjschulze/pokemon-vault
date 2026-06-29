@@ -21,15 +21,6 @@ export function useCameraStream() {
           videoRef.current.srcObject = cameraStream;
           const track = cameraStream.getVideoTracks()[0];
 
-            try {
-              await track.applyConstraints({
-                advanced: [
-                  { focusMode: "continuous" } as MediaTrackConstraintSet,
-                ],
-              });
-            } catch {
-              console.log("Advanced camera focus controls not supported.");
-            }
         }
       } catch {
         setError("Camera access was denied or unavailable.");
