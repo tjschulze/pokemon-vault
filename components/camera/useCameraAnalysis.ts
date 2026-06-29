@@ -49,9 +49,9 @@ export function useCameraAnalysis(videoRef: React.RefObject<HTMLVideoElement | n
       if (glareRatio > 0.08) {
         setCameraStatus("glare");
         setCameraHint("Reduce glare");
-      } else if (avgContrast < 8) {
+      } else if (avgContrast < 3) {
         setCameraStatus("blurry");
-        setCameraHint("Improve focus");
+        setCameraHint("Move closer or improve lighting");
       } else if (movement > 8) {
         setCameraStatus("steady");
         setCameraHint("Hold steady");
