@@ -18,6 +18,8 @@ export function VaultCameraOverlay({
     : cameraStatus === "glare"
       ? "border-red-300"
       : "border-yellow-300";
+
+  const innerGuideInset = 8;
   return (
     <>
       <div className="absolute inset-0 bg-black/40" />
@@ -53,7 +55,15 @@ export function VaultCameraOverlay({
             <div className={`absolute -bottom-1 -left-1 h-12 w-12 border-b-4 border-l-4 rounded-bl-3xl ${cornerColor}`} />
             <div className={`absolute -bottom-1 -right-1 h-12 w-12 border-b-4 border-r-4 rounded-br-3xl ${cornerColor}`} />
 
-            <div className="absolute inset-4 rounded-[1.5rem] border border-emerald-300/40" />
+            <div
+              className={`absolute rounded-[1.25rem] border-2 border-emerald-300/60 transition-all duration-300`}
+              style={{
+                top: `${innerGuideInset * 4}px`,
+                right: `${innerGuideInset * 4}px`,
+                bottom: `${innerGuideInset * 4}px`,
+                left: `${innerGuideInset * 4}px`,
+              }}
+            />
 
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="rounded-full bg-slate-950/70 border border-emerald-400/40 px-4 py-2 text-sm text-emerald-300">
