@@ -6,6 +6,7 @@ import { useCameraStream } from "./camera/useCameraStream";
 import { VaultCameraOverlay } from "./camera/VaultCameraOverlay";
 import { CaptureReview } from "./camera/CaptureReview";
 import { archiveCardImage } from "./camera/archiveCard";
+import { vibrate } from "./camera/vaultFeedback";
 
 export function CameraExperience({
   onClose,
@@ -45,6 +46,7 @@ export function CameraExperience({
     try {
       setArchiving(true);
       const blob = await captureFrame();
+      vibrate(35);
       const previewUrl = URL.createObjectURL(blob);
 
       setCapturedBlob(blob);
@@ -62,7 +64,7 @@ export function CameraExperience({
 
     try {
       setArchiving(true);
-
+      vibrate([30, 40, 30]);vibrate([30, 40, 30]);
       const card = await archiveCardImage({
         blob: capturedBlob,
         nextId,
