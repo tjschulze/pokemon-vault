@@ -32,7 +32,7 @@ export function VaultCameraOverlay({
         onClick={onManualFocus}
         className="absolute top-5 left-5 z-30 rounded-full bg-slate-950/80 border border-emerald-400/40 px-4 py-3 text-sm font-bold text-emerald-300"
       >
-        Tap to Focus
+        Refocus
       </button>
       <div className="relative z-10 min-h-screen flex flex-col justify-between p-5 pt-12 pb-56 text-center">
         <div>

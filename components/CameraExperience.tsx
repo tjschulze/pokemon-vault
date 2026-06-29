@@ -18,7 +18,7 @@ export function CameraExperience({
   onCardCreated: (card: CardCopy) => void;
   nextId: string;
 }) {
-  const { videoRef, error, stopCamera, captureFrame, focusCamera } = useCameraStream();
+  const { videoRef, error, stopCamera, captureFrame, restartCamera } = useCameraStream();
   const { cameraStatus, cameraHint } = useCameraAnalysis(videoRef);
 
   const [capturedBlob, setCapturedBlob] = useState<Blob | null>(null);
@@ -60,12 +60,12 @@ export function CameraExperience({
   }
 
   async function handleManualFocus() {
-    const focused = await focusCamera();
+    const restarted = await restartCamera();
 
-    if (focused) {
+    if (restarted) {
       vibrate(25);
     } else {
-      alert("Manual focus is not supported on this browser. Try tapping the screen or moving slightly closer.");
+      alert("Could not restart the camera. Try closing and reopening The Vault Camera.");
     }
   }
 

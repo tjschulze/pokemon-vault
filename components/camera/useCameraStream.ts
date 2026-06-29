@@ -81,7 +81,33 @@ export function useCameraStream() {
       } catch {
         return false;
       }
+  }
+
+  async function restartCamera() {
+    stopCamera();
+
+    try {
+      const cameraStream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: { ideal: "environment" },
+          width: { ideal: 1920 },
+          height: { ideal: 1080 },
+        },
+        audio: false,
+      });
+
+      setStream(cameraStream);
+
+      if (videoRef.current) {
+        videoRef.current.srcObject = cameraStream;
+      }
+
+      return true;
+    } catch {
+      setError("Camera access was denied or unavailable.");
+      return false;
     }
+  }
 
   return {
     videoRef,
@@ -89,5 +115,6 @@ export function useCameraStream() {
     stopCamera,
     captureFrame,
     focusCamera,
+    restartCamera,
   };
 }
