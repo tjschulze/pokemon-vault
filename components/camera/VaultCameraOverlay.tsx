@@ -28,7 +28,12 @@ export function VaultCameraOverlay({
       >
         <X />
       </button>
-
+      <button
+        onClick={onManualFocus}
+        className="mt-4 rounded-full bg-slate-950/70 border border-emerald-400/40 px-5 py-3 text-sm font-bold text-emerald-300"
+      >
+        Tap to Focus
+      </button>
       <div className="relative z-10 min-h-screen flex flex-col justify-between p-5 pt-12 pb-56 text-center">
         <div>
           <div className="mx-auto mb-3 h-14 w-14 rounded-full bg-emerald-400 text-slate-950 flex items-center justify-center shadow-lg shadow-emerald-500/40">
@@ -60,12 +65,6 @@ export function VaultCameraOverlay({
           <p className="mt-4 text-sm text-emerald-300">
             Every card has a story. Every story deserves a home.
           </p>
-          <button
-            onClick={onManualFocus}
-            className="mt-4 rounded-full bg-slate-950/70 border border-emerald-400/40 px-5 py-3 text-sm font-bold text-emerald-300"
-          >
-            Tap to Focus
-          </button>
         </div>
       </div>
     </>
