@@ -1,7 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import type { CardCopy } from "@/types/card";
-import { playVaultClick } from "./vaultFeedback";
-import { vibrate } from "./camera/vaultFeedback";
+import { playVaultClick } from "./vaultFeedback"
 
 export async function archiveCardImage({
   blob,
