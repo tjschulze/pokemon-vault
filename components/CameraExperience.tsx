@@ -99,6 +99,15 @@ export function CameraExperience({
     stopCamera();
     onClose();
   }
+  async function handleHighQualityCapture(file?: File) {
+    if (!file) return;
+
+    const previewUrl = URL.createObjectURL(file);
+
+    setCapturedBlob(file);
+    setCapturedPreview(previewUrl);
+    vibrate(35);
+  }
 
   return (
     <div className="fixed inset-0 z-[100] bg-slate-950 text-white overflow-hidden">
@@ -122,6 +131,7 @@ export function CameraExperience({
         archiving={archiving}
         error={error}
         onCapture={handleCapture}
+        onHighQualityCapture={handleHighQualityCapture}
         onConfirm={handleConfirmArchive}
         onRetake={handleRetake}
       />

@@ -5,6 +5,7 @@ export function CaptureReview({
   archiving,
   error,
   onCapture,
+  onHighQualityCapture,
   onConfirm,
   onRetake,
 }: {
@@ -12,6 +13,7 @@ export function CaptureReview({
   archiving: boolean;
   error: string;
   onCapture: () => void;
+  onHighQualityCapture: (file?: File) => void;
   onConfirm: () => void;
   onRetake: () => void;
 }) {
@@ -30,7 +32,16 @@ export function CaptureReview({
       )}
 
       {error && <p className="mb-4 text-center text-red-300">{error}</p>}
-
+      <label className="mb-3 mx-auto w-full max-w-sm rounded-2xl bg-slate-950/90 border border-emerald-400/40 px-6 py-4 text-emerald-300 font-black text-lg flex items-center justify-center gap-2">
+        High Quality Capture
+        <input
+          type="file"
+          accept="image/*"
+          capture="environment"
+          className="hidden"
+          onChange={(e) => onHighQualityCapture(e.target.files?.[0])}
+        />
+      </label>
       <button
         onClick={previewUrl ? onConfirm : onCapture}
         disabled={archiving || !!error}
