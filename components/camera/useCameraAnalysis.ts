@@ -5,6 +5,12 @@ export type CameraStatus = "searching" | "steady" | "glare" | "blurry" | "ready"
 export function useCameraAnalysis(videoRef: React.RefObject<HTMLVideoElement | null>) {
   const [cameraStatus, setCameraStatus] = useState<CameraStatus>("searching");
   const [cameraHint, setCameraHint] = useState("Center the card in the frame");
+  const hints = [
+    "Bring the card to the outer brass frame",
+    "Tap Refocus",
+    "Slowly move back until the card fits the inner border",
+    "Hold steady and archive",
+  ];
 
   useEffect(() => {
     const canvas = document.createElement("canvas");

@@ -42,7 +42,7 @@ export function VaultCameraOverlay({
 
           <h1 className="text-4xl font-black">The Vault Camera</h1>
           <p className="mt-2 text-slate-300">
-            Center the card. Archive the story.
+            Focus close. Pull back. Archive crisp.
           </p>
         </div>
 
