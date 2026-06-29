@@ -13,6 +13,11 @@ export function useCameraStream() {
             facingMode: { ideal: "environment" },
             width: { ideal: 1920 },
             height: { ideal: 1080 },
+            advanced: [
+              { focusMode: "continuous" } as MediaTrackConstraintSet,
+              { exposureMode: "continuous" } as MediaTrackConstraintSet,
+              { whiteBalanceMode: "continuous" } as MediaTrackConstraintSet,
+            ],
           },
           audio: false,
         });
@@ -21,6 +26,19 @@ export function useCameraStream() {
 
         if (videoRef.current) {
           videoRef.current.srcObject = cameraStream;
+          const track = cameraStream.getVideoTracks()[0];
+
+            try {
+              await track.applyConstraints({
+                advanced: [
+                  { focusMode: "continuous" } as MediaTrackConstraintSet,
+                  { exposureMode: "continuous" } as MediaTrackConstraintSet,
+                  { whiteBalanceMode: "continuous" } as MediaTrackConstraintSet,
+                ],
+              });
+            } catch {
+              console.log("Advanced camera focus controls not supported.");
+            }
         }
       } catch {
         setError("Camera access was denied or unavailable.");
