@@ -11,6 +11,8 @@ export function useCameraStream() {
         const cameraStream = await navigator.mediaDevices.getUserMedia({
           video: {
             facingMode: { ideal: "environment" },
+            width: { ideal: 3840 },
+            height: { ideal: 2160 },
           },
           audio: false,
         });
@@ -42,6 +44,7 @@ export function useCameraStream() {
     if (!videoRef.current) throw new Error("Camera is not ready.");
 
     const video = videoRef.current;
+    console.log("Capture resolution:", video.videoWidth, video.videoHeight);
     const canvas = document.createElement("canvas");
 
     canvas.width = video.videoWidth;

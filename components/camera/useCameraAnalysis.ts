@@ -1,74 +1,96 @@
 import { useEffect, useState } from "react";
 
-export type CameraStatus = "searching" | "steady" | "glare" | "blurry" | "ready";
+export type CameraStatus =
+  | "searching"
+  | "steady"
+  | "glare"
+  | "blurry"
+  | "ready";
 
-export function useCameraAnalysis(videoRef: React.RefObject<HTMLVideoElement | null>) {
-  const [cameraStatus, setCameraStatus] = useState<CameraStatus>("searching");
-  const [cameraHint, setCameraHint] = useState("Center the card in the frame");
-  const hints = [
-    "Bring the card to the outer brass frame",
-    "Tap Refocus",
-    "Slowly move back until the card fits the inner border",
-    "Hold steady and archive",
-  ];
+export function useCameraAnalysis(
+  videoRef: React.RefObject<HTMLVideoElement | null>
+) {
+  const [cameraStatus, setCameraStatus] =
+    useState<CameraStatus>("searching");
+
+  const [cameraHint, setCameraHint] = useState(
+    "Bring the card to the outer brass frame"
+  );
+
+  const [sharpness, setSharpness] = useState(0);
 
   useEffect(() => {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
-    let lastBrightness = 0;
 
     const timer = window.setInterval(() => {
       const video = videoRef.current;
       if (!video || !ctx || video.videoWidth === 0) return;
 
-      canvas.width = 160;
-      canvas.height = 224;
+      canvas.width = 120;
+      canvas.height = 168;
 
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
       const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const data = frame.data;
 
-      let brightness = 0;
       let brightPixels = 0;
-      let contrast = 0;
+      let edgeEnergy = 0;
 
-      for (let i = 0; i < data.length; i += 4) {
-        const value = (data[i] + data[i + 1] + data[i + 2]) / 3;
-        brightness += value;
+      for (let y = 1; y < canvas.height - 1; y++) {
+        for (let x = 1; x < canvas.width - 1; x++) {
+          const i = (y * canvas.width + x) * 4;
 
-        if (value > 235) brightPixels++;
+          const gray =
+            (data[i] + data[i + 1] + data[i + 2]) / 3;
 
-        if (i > 4) {
-          const previous = (data[i - 4] + data[i - 3] + data[i - 2]) / 3;
-          contrast += Math.abs(value - previous);
+          if (gray > 240) brightPixels++;
+
+          const leftIndex = (y * canvas.width + (x - 1)) * 4;
+          const rightIndex = (y * canvas.width + (x + 1)) * 4;
+          const upIndex = ((y - 1) * canvas.width + x) * 4;
+          const downIndex = ((y + 1) * canvas.width + x) * 4;
+
+          const left =
+            (data[leftIndex] + data[leftIndex + 1] + data[leftIndex + 2]) / 3;
+          const right =
+            (data[rightIndex] + data[rightIndex + 1] + data[rightIndex + 2]) / 3;
+          const up =
+            (data[upIndex] + data[upIndex + 1] + data[upIndex + 2]) / 3;
+          const down =
+            (data[downIndex] + data[downIndex + 1] + data[downIndex + 2]) / 3;
+
+          const gx = right - left;
+          const gy = down - up;
+
+          edgeEnergy += Math.sqrt(gx * gx + gy * gy);
         }
       }
 
-      const pixels = data.length / 4;
-      const avgBrightness = brightness / pixels;
+      const pixels = canvas.width * canvas.height;
       const glareRatio = brightPixels / pixels;
-      const avgContrast = contrast / pixels;
-      const movement = Math.abs(avgBrightness - lastBrightness);
+      const sharpnessScore = Math.round(edgeEnergy / pixels);
 
-      lastBrightness = avgBrightness;
+      setSharpness(sharpnessScore);
 
       if (glareRatio > 0.08) {
         setCameraStatus("glare");
         setCameraHint("Reduce glare");
-      } else if (avgContrast < 3) {
+      } else if (sharpnessScore < 12) {
         setCameraStatus("blurry");
-        setCameraHint("Move closer or improve lighting");
-      } else if (movement > 8) {
+        setCameraHint("Move closer, tap Refocus, then pull back");
+      } else if (sharpnessScore < 20) {
         setCameraStatus("steady");
         setCameraHint("Hold steady");
       } else {
         setCameraStatus("ready");
         setCameraHint("Ready to archive");
       }
-    }, 600);
+    }, 500);
 
     return () => window.clearInterval(timer);
   }, [videoRef]);
 
-  return { cameraStatus, cameraHint };
+  return { cameraStatus, cameraHint, sharpness };
 }

@@ -19,7 +19,7 @@ export function CameraExperience({
   nextId: string;
 }) {
   const { videoRef, error, stopCamera, captureFrame, restartCamera } = useCameraStream();
-  const { cameraStatus, cameraHint } = useCameraAnalysis(videoRef);
+  const { cameraStatus, cameraHint, sharpness } = useCameraAnalysis(videoRef);
 
   const [capturedBlob, setCapturedBlob] = useState<Blob | null>(null);
   const [capturedPreview, setCapturedPreview] = useState("");
