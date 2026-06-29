@@ -1,10 +1,13 @@
 import { Camera, X } from "lucide-react";
+import type { CameraStatus } from "./useCameraAnalysis";
 
 export function VaultCameraOverlay({
   cameraHint,
+  cameraStatus,
   onClose,
 }: {
   cameraHint: string;
+  cameraStatus: CameraStatus;
   onClose: () => void;
 }) {
   return (
@@ -32,10 +35,10 @@ export function VaultCameraOverlay({
 
         <div className="mx-auto w-full max-w-xs">
           <div className="relative aspect-[2.5/3.5] rounded-[2rem] bg-emerald-400/5 backdrop-blur-[1px] shadow-2xl shadow-emerald-500/30">
-            <div className="absolute -top-1 -left-1 h-12 w-12 border-t-4 border-l-4 border-yellow-300 rounded-tl-3xl" />
-            <div className="absolute -top-1 -right-1 h-12 w-12 border-t-4 border-r-4 border-yellow-300 rounded-tr-3xl" />
-            <div className="absolute -bottom-1 -left-1 h-12 w-12 border-b-4 border-l-4 border-yellow-300 rounded-bl-3xl" />
-            <div className="absolute -bottom-1 -right-1 h-12 w-12 border-b-4 border-r-4 border-yellow-300 rounded-br-3xl" />
+            <div className={"absolute -top-1 -left-1 h-12 w-12 border-t-4 border-l-4 ${cameraStatus === "ready" ? "border-emerald-300" : cameraStatus === "glare" ? "border-red-300" : "border-yellow-300"}"} />
+            <div className={"absolute -top-1 -right-1 h-12 w-12 border-t-4 border-r-4 ${cameraStatus === "ready" ? "border-emerald-300" : cameraStatus === "glare" ? "border-red-300" : "border-yellow-300"}"} />
+            <div className={"absolute -bottom-1 -left-1 h-12 w-12 border-b-4 border-l-4 ${cameraStatus === "ready" ? "border-emerald-300" : cameraStatus === "glare" ? "border-red-300" : "border-yellow-300"}"} />
+            <div className={"absolute -bottom-1 -right-1 h-12 w-12 border-b-4 border-r-4 ${cameraStatus === "ready" ? "border-emerald-300" : cameraStatus === "glare" ? "border-red-300" : "border-yellow-300"}"} />
 
             <div className="absolute inset-4 rounded-[1.5rem] border border-emerald-300/40" />
 

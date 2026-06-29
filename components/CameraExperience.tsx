@@ -7,6 +7,7 @@ import { VaultCameraOverlay } from "./camera/VaultCameraOverlay";
 import { CaptureReview } from "./camera/CaptureReview";
 import { archiveCardImage } from "./camera/archiveCard";
 import { vibrate } from "./camera/vaultFeedback";
+import { useCameraAnalysis } from "./camera/useCameraAnalysis";
 
 export function CameraExperience({
   onClose,
@@ -18,8 +19,8 @@ export function CameraExperience({
   nextId: string;
 }) {
   const { videoRef, error, stopCamera, captureFrame } = useCameraStream();
+  const { cameraStatus, cameraHint } = useCameraAnalysis(videoRef);
 
-  const [cameraHint, setCameraHint] = useState("Center the card in the frame");
   const [capturedBlob, setCapturedBlob] = useState<Blob | null>(null);
   const [capturedPreview, setCapturedPreview] = useState("");
   const [archiving, setArchiving] = useState(false);
@@ -36,7 +37,6 @@ export function CameraExperience({
 
     const hintTimer = window.setInterval(() => {
       hintIndex = (hintIndex + 1) % hints.length;
-      setCameraHint(hints[hintIndex]);
     }, 2500);
 
     return () => window.clearInterval(hintTimer);
@@ -100,7 +100,11 @@ export function CameraExperience({
         className="absolute inset-0 h-full w-full object-cover"
       />
 
-      <VaultCameraOverlay cameraHint={cameraHint} onClose={handleClose} />
+      <VaultCameraOverlay
+        cameraHint={cameraHint}
+        cameraStatus={cameraStatus}
+        onClose={handleClose}
+      />
 
       <CaptureReview
         previewUrl={capturedPreview}
