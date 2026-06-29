@@ -18,7 +18,7 @@ export function CameraExperience({
   onCardCreated: (card: CardCopy) => void;
   nextId: string;
 }) {
-  const { videoRef, error, stopCamera, captureFrame } = useCameraStream();
+  const { videoRef, error, stopCamera, captureFrame, focusCamera } = useCameraStream();
   const { cameraStatus, cameraHint } = useCameraAnalysis(videoRef);
 
   const [capturedBlob, setCapturedBlob] = useState<Blob | null>(null);
@@ -56,6 +56,16 @@ export function CameraExperience({
       const message = err instanceof Error ? err.message : "Capture failed.";
       alert(message);
       setArchiving(false);
+    }
+  }
+
+  async function handleManualFocus() {
+    const focused = await focusCamera();
+
+    if (focused) {
+      vibrate(25);
+    } else {
+      alert("Manual focus is not supported on this browser. Try tapping the screen or moving slightly closer.");
     }
   }
 
@@ -104,6 +114,7 @@ export function CameraExperience({
         cameraHint={cameraHint}
         cameraStatus={cameraStatus}
         onClose={handleClose}
+        onManualFocus={handleManualFocus}
       />
 
       <CaptureReview

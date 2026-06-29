@@ -64,10 +64,30 @@ export function useCameraStream() {
     });
   }
 
+  async function focusCamera() {
+      const activeStream = videoRef.current?.srcObject as MediaStream | null;
+      const track = activeStream?.getVideoTracks()[0];
+
+      if (!track) return false;
+
+      try {
+        await track.applyConstraints({
+          advanced: [
+            { focusMode: "continuous" } as MediaTrackConstraintSet,
+          ],
+        });
+
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
   return {
     videoRef,
     error,
     stopCamera,
     captureFrame,
+    focusCamera,
   };
 }

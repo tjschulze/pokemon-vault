@@ -5,10 +5,12 @@ export function VaultCameraOverlay({
   cameraHint,
   cameraStatus,
   onClose,
+  onManualFocus,
 }: {
   cameraHint: string;
   cameraStatus: CameraStatus;
   onClose: () => void;
+  onManualFocus: () => void;
 }) {
   const cornerColor =
   cameraStatus === "ready"
@@ -58,6 +60,12 @@ export function VaultCameraOverlay({
           <p className="mt-4 text-sm text-emerald-300">
             Every card has a story. Every story deserves a home.
           </p>
+          <button
+            onClick={onManualFocus}
+            className="mt-4 rounded-full bg-slate-950/70 border border-emerald-400/40 px-5 py-3 text-sm font-bold text-emerald-300"
+          >
+            Tap to Focus
+          </button>
         </div>
       </div>
     </>
