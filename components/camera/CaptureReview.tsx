@@ -42,18 +42,28 @@ export function CaptureReview({
           onChange={(e) => onHighQualityCapture(e.target.files?.[0])}
         />
       </label>
+      {previewUrl ? (
       <button
-        onClick={previewUrl ? onConfirm : onCapture}
+        onClick={onConfirm}
         disabled={archiving || !!error}
         className="mx-auto w-full max-w-sm rounded-2xl bg-emerald-400 px-6 py-4 text-slate-950 font-black text-lg shadow-lg shadow-emerald-500/30 disabled:opacity-50 flex items-center justify-center gap-2"
       >
         <Archive size={22} />
-        {archiving
-          ? "Creating Passport..."
-          : previewUrl
-            ? "Confirm Archive"
-            : "Archive Card"}
+        {archiving ? "Creating Passport..." : "Confirm Archive"}
       </button>
+    ) : (
+      <label className="mx-auto w-full max-w-sm rounded-2xl bg-emerald-400 px-6 py-4 text-slate-950 font-black text-lg shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2">
+        <Archive size={22} />
+        Archive Card
+        <input
+          type="file"
+          accept="image/*"
+          capture="environment"
+          className="hidden"
+          onChange={(e) => onHighQualityCapture(e.target.files?.[0])}
+        />
+      </label>
+    )}
     </div>
   );
 }
