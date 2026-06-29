@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { CardCopy } from "@/types/card";
 import { useCameraStream } from "./camera/useCameraStream";
 import { VaultCameraOverlay } from "./camera/VaultCameraOverlay";
@@ -24,23 +24,6 @@ export function CameraExperience({
   const [capturedBlob, setCapturedBlob] = useState<Blob | null>(null);
   const [capturedPreview, setCapturedPreview] = useState("");
   const [archiving, setArchiving] = useState(false);
-
-  useEffect(() => {
-    const hints = [
-      "Center the card in the frame",
-      "Hold steady",
-      "Avoid glare on the surface",
-      "Fill the brass corners with the card",
-    ];
-
-    let hintIndex = 0;
-
-    const hintTimer = window.setInterval(() => {
-      hintIndex = (hintIndex + 1) % hints.length;
-    }, 2500);
-
-    return () => window.clearInterval(hintTimer);
-  }, []);
 
   async function handleCapture() {
     try {
@@ -74,7 +57,7 @@ export function CameraExperience({
 
     try {
       setArchiving(true);
-      vibrate([30, 40, 30]);vibrate([30, 40, 30]);
+      vibrate([30, 40, 30]);
       const card = await archiveCardImage({
         blob: capturedBlob,
         nextId,

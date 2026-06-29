@@ -2,48 +2,64 @@ import { useEffect, useRef, useState } from "react";
 
 export function useCameraStream() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [stream, setStream] = useState<MediaStream | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    async function startCamera() {
-      try {
-        const cameraStream = await navigator.mediaDevices.getUserMedia({
-          video: {
-            facingMode: { ideal: "environment" },
-            width: { ideal: 1920 },
-            height: { ideal: 1080 },
-          },
-          audio: false,
-        });
+  async function startCamera() {
+    try {
+      stopCamera();
 
-        setStream(cameraStream);
+      const cameraStream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: { ideal: "environment" },
+          width: { ideal: 1920 },
+          height: { ideal: 1080 },
+        },
+        audio: false,
+      });
 
-        if (videoRef.current) {
-          videoRef.current.srcObject = cameraStream;
-        }
-      } catch {
-        setError("Camera access was denied or unavailable.");
+      streamRef.current = cameraStream;
+
+      if (videoRef.current) {
+        videoRef.current.srcObject = cameraStream;
+        await videoRef.current.play().catch(() => {});
       }
-    }
 
+      setError("");
+      return true;
+    } catch {
+      setError("Camera access was denied or unavailable.");
+      return false;
+    }
+  }
+
+  useEffect(() => {
     startCamera();
 
     return () => {
-      stream?.getTracks().forEach((track) => track.stop());
+      stopCamera();
     };
   }, []);
 
   function stopCamera() {
-    stream?.getTracks().forEach((track) => track.stop());
+    streamRef.current?.getTracks().forEach((track) => track.stop());
+    streamRef.current = null;
+
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
   }
 
   async function captureFrame() {
     if (!videoRef.current) throw new Error("Camera is not ready.");
 
     const video = videoRef.current;
-    const canvas = document.createElement("canvas");
 
+    if (video.videoWidth === 0 || video.videoHeight === 0) {
+      throw new Error("Camera image is not ready yet.");
+    }
+
+    const canvas = document.createElement("canvas");
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
 
@@ -64,49 +80,8 @@ export function useCameraStream() {
     });
   }
 
-  async function focusCamera() {
-      const activeStream = videoRef.current?.srcObject as MediaStream | null;
-      const track = activeStream?.getVideoTracks()[0];
-
-      if (!track) return false;
-
-      try {
-        await track.applyConstraints({
-          advanced: [
-            { focusMode: "continuous" } as MediaTrackConstraintSet,
-          ],
-        });
-
-        return true;
-      } catch {
-        return false;
-      }
-  }
-
   async function restartCamera() {
-    stopCamera();
-
-    try {
-      const cameraStream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: { ideal: "environment" },
-          width: { ideal: 1920 },
-          height: { ideal: 1080 },
-        },
-        audio: false,
-      });
-
-      setStream(cameraStream);
-
-      if (videoRef.current) {
-        videoRef.current.srcObject = cameraStream;
-      }
-
-      return true;
-    } catch {
-      setError("Camera access was denied or unavailable.");
-      return false;
-    }
+    return await startCamera();
   }
 
   return {
@@ -114,7 +89,6 @@ export function useCameraStream() {
     error,
     stopCamera,
     captureFrame,
-    focusCamera,
     restartCamera,
   };
 }

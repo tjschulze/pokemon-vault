@@ -19,10 +19,9 @@ export function VaultCameraOverlay({
       ? "border-red-300"
       : "border-yellow-300";
 
-  const innerGuideInset = 8;
   return (
     <>
-      <div className="absolute inset-0 bg-black/40" />
+      <div className="absolute inset-0 bg-black/10 pointer-events-none" />
 
       <button
         onClick={onClose}
